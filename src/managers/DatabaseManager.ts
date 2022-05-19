@@ -18,7 +18,9 @@ export default class DatabaseManager {
     if (!this._instance) {
       this._initialize();
     }
-    await this.instance.authenticate();
+    await this.instance.authenticate().catch(() => {
+      console.log("Database connection failed");
+    });
   }
   public static get instance() {
     if (!this._instance) {
