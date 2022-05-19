@@ -1,6 +1,7 @@
 import express, { Express } from "express";
 import path from "path";
 import fs from "fs";
+import Routes from "../Routes";
 
 export default class App {
   private static _instance: Express;
@@ -23,6 +24,8 @@ export default class App {
       throw new Error("Must provide application's secrete");
     }
     this._instance = express();
+    this.instance.use(express.json());
+    this._instance.use("/api/v1", Routes);
     this.initializeModels();
   }
   public static get instance() {
