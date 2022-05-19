@@ -5,5 +5,6 @@ COPY ./package.json .
 RUN yarn install
 
 COPY ./ .
-ENTRYPOINT ["yarn","start:production"]
+
+CMD ["yarn","start:production"]
 

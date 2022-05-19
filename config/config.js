@@ -1,5 +1,6 @@
-const fs = require("fs");
+const dotenv=require("dotenv")
 
+dotenv.config()
 module.exports = {
   development: {
     dialect: "mariadb",
@@ -7,9 +8,6 @@ module.exports = {
     host: process.env.DATABASE_HOST,
     password: process.env.DATABASE_PASSWORD,
     username: process.env.DATABASE_USER,
-    dialectOptions: {
-      bigNumberStrings: true,
-    },
   },
   test: {
     dialect: "mariadb",
@@ -17,9 +15,6 @@ module.exports = {
     host: process.env.DATABASE_HOST,
     password: process.env.DATABASE_PASSWORD,
     username: process.env.DATABASE_USER,
-    dialectOptions: {
-      bigNumberStrings: true,
-    },
   },
   production: {
     dialect: "mariadb",
@@ -27,11 +22,5 @@ module.exports = {
     host: process.env.DATABASE_HOST,
     password: process.env.DATABASE_PASSWORD,
     username: process.env.DATABASE_USER,
-    dialectOptions: {
-      bigNumberStrings: true,
-      ssl: {
-        ca: fs.readFileSync(__dirname + "/mysql-ca-main.crt"),
-      },
-    },
   },
 };

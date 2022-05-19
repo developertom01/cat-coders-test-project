@@ -1,12 +1,12 @@
-import bcrypt from "bcrypt";
+import crypto from "crypto";
 
 export default class PasswordManager {
-  private static salt = 10;
+  private static salt = crypto.randomBytes(16).toString("hex");
   public static hash(password: string) {
-    return bcrypt.hashSync(password, this.salt);
+    return crypto.scryptSync(password, this.salt, 64).toString("utf8");
   }
 
   public static compare(data: string, encrypted: string) {
-    return bcrypt.compareSync(data, encrypted);
+    return this.hash(data) === encrypted;
   }
 }

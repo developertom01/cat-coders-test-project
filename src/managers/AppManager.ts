@@ -41,7 +41,7 @@ export default class App {
     if (!this._instance) {
       this._initialize();
     }
-    const port = process.env.PORT ?? 3000;
+    const port = parseInt(process.env.PORT!);
     this._instance.listen(port, () => {
       if (process.env.NODE_ENV === "development") {
         console.log(`App started on http://localhost:${port}`);
