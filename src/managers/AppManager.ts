@@ -2,7 +2,7 @@ import express, { Express } from "express";
 import path from "path";
 import fs from "fs";
 import Routes from "../Routes";
-
+import ErrorHandlerMiddleware from "../app/http/Middleware/ErrorHandlerMiddleware";
 export default class App {
   private static _instance: Express;
   private static sanitizePathName(file: string) {
@@ -23,10 +23,13 @@ export default class App {
     if (!process.env.APP_SECRETE) {
       throw new Error("Must provide application's secrete");
     }
+    this.initializeModels();
     this._instance = express();
     this.instance.use(express.json());
     this._instance.use("/api/v1", Routes);
-    this.initializeModels();
+
+    //Should be the last middleware
+    this._instance.use(ErrorHandlerMiddleware);
   }
   public static get instance() {
     if (!this._instance) {
