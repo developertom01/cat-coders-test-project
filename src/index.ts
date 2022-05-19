@@ -3,8 +3,8 @@ import DatabaseManager from "./managers/DatabaseManager";
 import RedisManager from "./managers/RedisManager";
 import SocketManager from "./managers/SocketManager";
 
-export const preConfigure = () => {
-  DatabaseManager.instance.authenticate();
+export const preConfigure = async () => {
+ await DatabaseManager.instance.authenticate();
   RedisManager.instance;
   SocketManager.io;
   App.listen();
@@ -17,6 +17,6 @@ export const postConfig = () => {
 
 preConfigure();
 
-process.on("exit", () => {
-  postConfig();
-});
+// process.on("exit", () => {
+//   postConfig();
+// });

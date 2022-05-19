@@ -7,12 +7,15 @@ export default class RedisManager {
     this._instance = createClient({
       password: process.env.REDIS_PASSWORD,
       username: process.env.REDIS_USER,
-      url: `${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+      url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
     });
     this.instance.connect().then(() => {
       if (process.env.NODE_ENV === "development") {
         console.log("Initialized redis manager");
       }
+    });
+    this.instance.on("error", () => {
+      console.log("An error occurred connecting to redis");
     });
   }
   public static get instance() {

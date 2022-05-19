@@ -30,7 +30,7 @@ export default class User
     id: {
       type: DataTypes.BIGINT,
       allowNull: false,
-      primaryKey: false,
+      primaryKey: true,
       autoIncrement: true,
       unique: true,
     },
