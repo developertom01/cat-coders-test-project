@@ -5,10 +5,5 @@ COPY ./package.json .
 RUN yarn install
 
 COPY ./ .
-
-
-RUN yarn build
-RUN setup
-
 ENTRYPOINT ["yarn","start:production"]
 

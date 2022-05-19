@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    environment:
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_HOST=database
+      - DATABASE_PASSWORD=${DATABASE_NAME}
+      - REDIS_PASSWORD=redis
+      - REDIS_USER=${REDIS_USER}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - APP_KEY=${APP_KEY}
+      - NODE_ENV=${NODE_ENV}
+      - PORT=${PORT}
+    ports:
+      - 8080:8080
+    depends_on:
+      - redis
+      - database
+    command: yarn build && yarn setup && yarn start
+    volumes:
+      - . /opt/app
+  
+  redis:
+    image: redis:7-alpine
+    ports:
+      - ${REDIS_PORT}:6379
+
+  database:
+    image: mariadb:10.7.1
+    ports:
+      - 3306:3306
+    environment:
+      - MARIADB_PASSWORD=${DATABASE_PASSWORD}
+      - MARIADB_USER=${DATABASE_USER}
+      - MYSQL_DATABASE=${DATABASE_NAME}
