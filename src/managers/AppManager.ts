@@ -8,7 +8,7 @@ export default class App {
     return file.split(".")[0];
   }
   private static initializeModels() {
-    const MODELS_PATH = path.resolve(__dirname, "../", "models");
+    const MODELS_PATH = path.resolve(__dirname, "../", "app", "models");
     for (const file of fs.readdirSync(MODELS_PATH)) {
       import(path.resolve(MODELS_PATH, this.sanitizePathName(file))).then(
         (model) => {

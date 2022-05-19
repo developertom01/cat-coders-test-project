@@ -1,7 +1,7 @@
 import moment from "moment";
 import { Optional, Model, ModelAttributes, DataTypes } from "sequelize";
-import DatabaseManager from "../managers/DatabaseManager";
-import PasswordManager from "../utils/PasswordManager";
+import DatabaseManager from "../../managers/DatabaseManager";
+import PasswordManager from "../../utils/PasswordManager";
 
 interface NonCreationAttribute {
   id: string;
