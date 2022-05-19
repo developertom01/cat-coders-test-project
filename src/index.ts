@@ -4,9 +4,7 @@ import RedisManager from "./managers/RedisManager";
 import SocketManager from "./managers/SocketManager";
 
 export const preConfigure = async () => {
-  DatabaseManager.instance.authenticate().catch(() => {
-    console.log("Database connection failed");
-  });
+  DatabaseManager.connect();
   RedisManager.instance;
   SocketManager.io;
   App.listen();

@@ -14,9 +14,7 @@ export default class RedisManager {
         console.log("Initialized redis manager");
       }
     });
-    this.instance.on("error", () => {
-      console.log("An error occurred connecting to redis");
-    });
+    this.instance.on("error", () => {});
   }
   public static get instance() {
     if (!this._instance) {

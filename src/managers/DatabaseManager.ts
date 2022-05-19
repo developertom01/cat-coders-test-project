@@ -14,11 +14,13 @@ export default class DatabaseManager {
       port: Number(process.env.DATABASE_PORT!),
     });
   }
-  public static async connect() {
+  public static connect() {
     if (!this._instance) {
       this._initialize();
     }
-    await this.instance.authenticate().catch(() => {
+    this.instance.authenticate().catch((error) => {
+      console.log(error);
+
       console.log("Database connection failed");
     });
   }
