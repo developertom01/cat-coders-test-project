@@ -1,8 +1,8 @@
 import DatabaseManager from "../managers/DatabaseManager";
 
 beforeEach(async () => {
-  await DatabaseManager.instance.authenticate();
+  // await DatabaseManager.connect();
 });
 afterEach(() => {
-  DatabaseManager.close();
+  // DatabaseManager.close();
 });

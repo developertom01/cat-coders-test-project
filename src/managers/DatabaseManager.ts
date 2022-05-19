@@ -14,6 +14,12 @@ export default class DatabaseManager {
       port: Number(process.env.DATABASE_PORT!),
     });
   }
+  public static async connect() {
+    if (!this._instance) {
+      this._initialize();
+    }
+    await this.instance.authenticate();
+  }
   public static get instance() {
     if (!this._instance) {
       this._initialize();

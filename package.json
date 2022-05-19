@@ -47,7 +47,7 @@
     "testEnvironment": "node",
     "testTimeout": 10000,
     "setupFilesAfterEnv": [
-      "./src/test/setup.test.ts"
+      "./src/test/setup.ts"
     ]
   }
 }
