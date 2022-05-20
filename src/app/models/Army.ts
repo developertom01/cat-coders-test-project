@@ -8,6 +8,7 @@ import {
   Optional,
 } from "sequelize";
 import DatabaseManager from "../../managers/DatabaseManager";
+import { HTTPErrors } from "../../utils/Errors";
 import Battle from "./Battle";
 
 interface NonCreationAttribute {
@@ -97,6 +98,9 @@ export default class Army
   }
 
   public async damage() {
+    if (this.units <= 0) {
+      //Todo: Render inactive
+    }
     if (this.units === 1) {
       await this.update({
         units: this.units - 1,
