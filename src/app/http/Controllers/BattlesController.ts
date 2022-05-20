@@ -7,6 +7,7 @@ import Army from "../../models/Army";
 import BattleResource from "../Resources/Battle";
 import { BattleStatus } from "../../../utils/enums";
 import { HTTPErrors } from "../../../utils/Errors";
+import { NextFunction } from "express";
 export default class BattlesController {
   /**
    *
@@ -29,7 +30,8 @@ export default class BattlesController {
    */
   public static store = async (
     req: IRequest<BattleCreatePayload.shape>,
-    res: IResponse
+    res: IResponse,
+    next: NextFunction
   ) => {
     const { armies, name } = req.body;
     const battleCount = await Battle.count({
@@ -61,7 +63,9 @@ export default class BattlesController {
       );
       return battle;
     });
+
     await battle.reload({ include: [Battle.associations.armies] });
+
     return res.status(201).json(new BattleResource(battle).toJSON());
   };
 }

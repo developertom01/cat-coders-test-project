@@ -1,15 +1,17 @@
 import { celebrate, Segments } from "celebrate";
-import express from "express";
+import express, { Router, RequestHandler } from "express";
 import BattlesController from "./app/http/Controllers/BattlesController";
 import BattleCreatePayload from "./app/http/Payloads/BattleCreatePayload";
-
+const asyncHandler = (fn: any) => (req: any, res: any, next: any) => {
+  return Promise.resolve(fn(req, res, next)).catch(next);
+};
 const router = express.Router();
 router
   .route("/battles")
-  .get(BattlesController.index)
+  .get(asyncHandler(BattlesController.index))
   .post(
     celebrate({ [Segments.BODY]: BattleCreatePayload.schema }),
-    BattlesController.store
+    asyncHandler(BattlesController.store)
   );
 
 export default router;

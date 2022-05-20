@@ -5,12 +5,14 @@ import Routes from "../Routes";
 import ErrorHandlerMiddleware from "../app/http/Middleware/ErrorHandlerMiddleware";
 import { errors as CelebrateMiddleware } from "celebrate";
 import http from "http";
+import SocketManager from "./SocketManager";
+
 export default class App {
   private _instance: Express;
-  private sanitizePathName(file: string) {
+  private static sanitizePathName(file: string) {
     return file.split(".")[0];
   }
-  public initializeModels() {
+  public static initializeModels() {
     const MODELS_PATH = path.resolve(__dirname, "../", "app", "models");
     const installers = fs
       .readdirSync(MODELS_PATH)
@@ -31,11 +33,10 @@ export default class App {
       throw new Error("Must provide application's secrete");
     }
     this._instance = express();
-    this.initializeModels();
+    App.initializeModels();
 
     this._instance.use(express.json());
     this._instance.use("/api/v1", Routes);
-
     //Should be the last middleware
     this._instance.use("*", (req, res) => {
       res.status(404).send("No route");
@@ -48,7 +49,7 @@ export default class App {
   }
   public listen() {
     const httpServer = http.createServer(this._instance);
-
+    SocketManager.initialize(httpServer);
     const port = parseInt(process.env.PORT!);
     httpServer.listen(port, () => {
       if (process.env.NODE_ENV === "development") {
