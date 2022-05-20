@@ -62,11 +62,11 @@ export default class Army
       allowNull: false,
     },
     units: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: false,
     },
     originalUnits: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: false,
     },
     createdAt: {

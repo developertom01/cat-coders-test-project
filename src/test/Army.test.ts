@@ -38,6 +38,6 @@ describe("Test Army methods", () => {
     });
     await army.damage();
     await army.reload();
-    expect(army.units).toBe(88);
+    expect(army.units).toBe(88.5);
   });
 });
