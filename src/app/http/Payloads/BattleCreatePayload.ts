@@ -18,7 +18,11 @@ namespace BattleCreatePayload {
         name: Joi.string().min(3).required(),
         units: Joi.number().min(80).max(100).required(),
         strategy: Joi.number()
-          .valid(...Object.values(AttackStrategy))
+          .valid(
+            ...Object.values(AttackStrategy).filter((value) =>
+              Number.isInteger(value)
+            )
+          )
           .required(),
       })
     ),
