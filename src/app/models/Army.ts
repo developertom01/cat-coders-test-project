@@ -1,40 +1,39 @@
 import moment from "moment";
 import {
-  Association,
   DataTypes,
   Model,
   ModelAttributes,
+  Association,
   Optional,
 } from "sequelize";
 import DatabaseManager from "../../managers/DatabaseManager";
-import { BattleStatus } from "../../utils/enums";
-import uuid from "uuid";
-import Army from "./Army";
+import Battle from "./Battle";
+
 interface NonCreationAttribute {
   id: string;
   createdAt: Date;
   updatedAt: Date;
-  status: BattleStatus;
+  units: number;
 }
 
 interface Attributes extends NonCreationAttribute {
   name: string;
+  battleId: string;
   uuid: string;
 }
-
-export type BattleCreationAttribute = Optional<
+export type AmyCreationAttribute = Optional<
   Attributes,
   keyof NonCreationAttribute
 >;
 
-export default class Battle
-  extends Model<Attributes, BattleCreationAttribute>
+export default class Army
+  extends Model<Attributes, AmyCreationAttribute>
   implements Attributes
 {
   public static associations: {
-    battle: Association<Battle, Army>;
+    battle: Association<Army, Battle>;
   };
-  public static attributes: ModelAttributes<Battle, Attributes> = {
+  public static attributes: ModelAttributes<Army> = {
     id: {
       type: DataTypes.BIGINT,
       allowNull: false,
@@ -42,18 +41,27 @@ export default class Battle
       autoIncrement: true,
       unique: true,
     },
-    name: {
-      type: DataTypes.STRING,
+    battleId: {
+      type: DataTypes.BIGINT,
       allowNull: false,
+      references: {
+        model: "Battles",
+        key: "id",
+      },
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
     },
     uuid: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    status: {
-      type: DataTypes.TINYINT,
+    name: {
+      type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: BattleStatus.INACTIVE,
+    },
+    units: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -66,30 +74,30 @@ export default class Battle
     },
   };
   public id!: string;
+  public battleId!: string;
   public name!: string;
-  public uuid!: string;
-  public status!: BattleStatus;
   public createdAt!: Date;
   public updatedAt!: Date;
+  public units!: number;
+  public uuid!: string;
 
-  public readonly armies?: Army[];
+  public readonly battle?: Battle;
 }
-
 export const install = () => {
-  Battle.init(Battle.attributes, {
+  Army.init(Army.attributes, {
     sequelize: DatabaseManager.instance,
     createdAt: true,
     updatedAt: true,
-    modelName: "Battle",
+    modelName: "Army",
   });
-  Battle.addHook("beforeCreate", (model: Battle) => {
+  Army.addHook("beforeCreate", (model: Army) => {
     model.createdAt = moment.utc().toDate();
     model.updatedAt = moment.utc().toDate();
   });
 };
 export const configure = () => {
-  Battle.hasMany(Army, {
-    as: "armies",
+  Army.belongsTo(Battle, {
+    as: "battle",
     foreignKey: "battleId",
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
