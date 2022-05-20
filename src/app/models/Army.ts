@@ -1,4 +1,4 @@
-import moment, { max } from "moment";
+import moment from "moment";
 import { Op } from "sequelize";
 import {
   DataTypes,
@@ -20,6 +20,8 @@ interface NonCreationAttribute {
 interface Attributes extends NonCreationAttribute {
   name: string;
   battleId: string;
+  originalUnits: number;
+
   uuid: string;
 }
 export type AmyCreationAttribute = Optional<
@@ -64,6 +66,10 @@ export default class Army
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    originalUnits: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -80,9 +86,16 @@ export default class Army
   public createdAt!: Date;
   public updatedAt!: Date;
   public units!: number;
+  public originalUnits!: number;
   public uuid!: string;
 
   public readonly battle?: Battle;
+
+  public async reset() {
+    await this.update({
+      units: this.originalUnits,
+    });
+  }
 
   private async damage() {
     await this.update({
