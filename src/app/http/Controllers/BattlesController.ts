@@ -1,7 +1,7 @@
 import { IRequest, IResponse } from "../../../utils/interfaces";
 import Battle from "../../models/Battle";
 import BattleCreatePayload from "../Payloads/BattleCreatePayload";
-import uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import DatabaseManager from "../../../managers/DatabaseManager";
 import Army from "../../models/Army";
 import BattleResource from "../Resources/Battle";
@@ -16,6 +16,7 @@ export default class BattlesController {
   public static index = async (req: IRequest, res: IResponse) => {
     const battles = await Battle.findAll({
       where: { status: BattleStatus.ACTIVE },
+      include: [Battle.associations.armies],
     });
     return res
       .status(200)
@@ -43,19 +44,19 @@ export default class BattlesController {
       const battle = await Battle.create(
         {
           name,
-          uuid: uuid.v4(),
+          uuid: uuidv4(),
         },
         { transaction: t }
       );
       await Army.bulkCreate(
-        armies.map((army) => ({
+        armies?.map((army) => ({
           battleId: battle.id,
           name: army.name,
           units: army.units,
-          uuid: uuid.v4(),
+          uuid: uuidv4(),
           attackStrategy: army.strategy,
           originalUnits: army.units,
-        })),
+        })) ?? [],
         { transaction: t }
       );
       return battle;

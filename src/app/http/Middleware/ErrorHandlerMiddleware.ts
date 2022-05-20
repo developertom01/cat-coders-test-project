@@ -1,15 +1,18 @@
-import { CelebrateError } from "celebrate";
+import { NextFunction } from "express";
 import { CustomError } from "../../../utils/Errors";
 import { HttpErrorStatusCodes } from "../../../utils/HttpStatusCodes";
 import { IRequest, IResponse } from "../../../utils/interfaces";
 
-const middleware = (error: Error, req: IRequest, res: IResponse) => {
-  if (error instanceof CelebrateError) {
-    return res.status(HttpErrorStatusCodes.BAD_REQUEST).json(error);
-  }
+const middleware = (
+  error: Error | CustomError,
+  req: IRequest,
+  res: IResponse,
+  next: NextFunction
+) => {
   if (error instanceof CustomError) {
-    return res.status(error.status).json(error.serialize());
+    res.status(error.status).json(error.serialize());
+  } else {
+    res.status(HttpErrorStatusCodes.SERVER_ERROR).json(error.message);
   }
-  return res.status(HttpErrorStatusCodes.SERVER_ERROR).json(error.message);
 };
 export default middleware;

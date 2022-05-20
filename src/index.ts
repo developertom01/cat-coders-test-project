@@ -7,7 +7,8 @@ export const preConfigure = async () => {
   DatabaseManager.connect();
   RedisManager.instance;
   SocketManager.io;
-  App.listen();
+  const app = new App();
+  app.listen();
 };
 
 export const postConfig = () => {

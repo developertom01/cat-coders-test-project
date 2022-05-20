@@ -4,12 +4,13 @@ import fs from "fs";
 import Routes from "../Routes";
 import ErrorHandlerMiddleware from "../app/http/Middleware/ErrorHandlerMiddleware";
 import { errors as CelebrateMiddleware } from "celebrate";
+import http from "http";
 export default class App {
-  private static _instance: Express;
-  private static sanitizePathName(file: string) {
+  private _instance: Express;
+  private sanitizePathName(file: string) {
     return file.split(".")[0];
   }
-  public static initializeModels() {
+  public initializeModels() {
     const MODELS_PATH = path.resolve(__dirname, "../", "app", "models");
     const installers = fs
       .readdirSync(MODELS_PATH)
@@ -25,31 +26,31 @@ export default class App {
       }
     });
   }
-  private static _initialize() {
+  constructor() {
     if (!process.env.APP_SECRETE) {
       throw new Error("Must provide application's secrete");
     }
-    this.initializeModels();
     this._instance = express();
-    this.instance.use(express.json());
+    this.initializeModels();
+
+    this._instance.use(express.json());
     this._instance.use("/api/v1", Routes);
 
     //Should be the last middleware
+    this._instance.use("*", (req, res) => {
+      res.status(404).send("No route");
+    });
     this._instance.use(CelebrateMiddleware());
     this._instance.use(ErrorHandlerMiddleware);
   }
-  public static get instance() {
-    if (!this._instance) {
-      this._initialize();
-    }
+  public instance() {
     return this._instance;
   }
-  public static listen() {
-    if (!this._instance) {
-      this._initialize();
-    }
+  public listen() {
+    const httpServer = http.createServer(this._instance);
+
     const port = parseInt(process.env.PORT!);
-    this._instance.listen(port, () => {
+    httpServer.listen(port, () => {
       if (process.env.NODE_ENV === "development") {
         console.log(`App started on http://localhost:${port}`);
       }

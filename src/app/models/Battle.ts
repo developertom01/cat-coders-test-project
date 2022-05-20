@@ -8,7 +8,6 @@ import {
 } from "sequelize";
 import DatabaseManager from "../../managers/DatabaseManager";
 import { BattleStatus } from "../../utils/enums";
-import uuid from "uuid";
 import Army from "./Army";
 interface NonCreationAttribute {
   id: string;
