@@ -5,12 +5,40 @@ import uuid from "uuid";
 import DatabaseManager from "../../../managers/DatabaseManager";
 import Army from "../../models/Army";
 import BattleResource from "../Resources/Battle";
+import { BattleStatus } from "../../../utils/enums";
+import { HTTPErrors } from "../../../utils/Errors";
 export default class BattlesController {
-  public static index = async (
+  /**
+   *
+   * Return all active battles
+   * @returns BattleResource[]
+   */
+  public static index = async (req: IRequest, res: IResponse) => {
+    const battles = await Battle.findAll({
+      where: { status: BattleStatus.ACTIVE },
+    });
+    return res
+      .status(200)
+      .json(battles.map((battle) => new BattleResource(battle).toJSON()));
+  };
+  /**
+   * Create new battle
+   * Throws an error when active battle count is 5 or more
+   * @returns BattleResource
+   */
+  public static store = async (
     req: IRequest<BattleCreatePayload.shape>,
     res: IResponse
   ) => {
     const { armies, name } = req.body;
+    const battleCount = await Battle.count({
+      where: { status: BattleStatus.ACTIVE },
+    });
+    if (battleCount >= 5) {
+      throw new HTTPErrors.BadRequestError(
+        "Maximum active battle count exceeded"
+      );
+    }
     const battle = await DatabaseManager.instance.transaction(async (t) => {
       const battle = await Battle.create(
         {
@@ -33,6 +61,6 @@ export default class BattlesController {
       return battle;
     });
     await battle.reload({ include: [Battle.associations.armies] });
-    return res.json(new BattleResource(battle).toJSON());
+    return res.status(201).json(new BattleResource(battle).toJSON());
   };
 }

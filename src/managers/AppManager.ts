@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import Routes from "../Routes";
 import ErrorHandlerMiddleware from "../app/http/Middleware/ErrorHandlerMiddleware";
+import { errors as CelebrateMiddleware } from "celebrate";
 export default class App {
   private static _instance: Express;
   private static sanitizePathName(file: string) {
@@ -22,7 +23,7 @@ export default class App {
       for (const element of installer) {
         element.configure();
       }
-    });89
+    });
   }
   private static _initialize() {
     if (!process.env.APP_SECRETE) {
@@ -34,6 +35,7 @@ export default class App {
     this._instance.use("/api/v1", Routes);
 
     //Should be the last middleware
+    this._instance.use(CelebrateMiddleware());
     this._instance.use(ErrorHandlerMiddleware);
   }
   public static get instance() {
