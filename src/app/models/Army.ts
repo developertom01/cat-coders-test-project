@@ -21,7 +21,6 @@ interface Attributes extends NonCreationAttribute {
   name: string;
   battleId: string;
   originalUnits: number;
-
   uuid: string;
 }
 export type AmyCreationAttribute = Optional<
@@ -98,23 +97,28 @@ export default class Army
   }
 
   private async damage() {
-    await this.update({
-      units: this.units - 1,
-    });
-  }
-
-  private async attack(army: Army) {
-    let curInit = this.units;
-    while (curInit > 0) {
-      const damaged = Math.round(Math.random());
-      if (damaged) {
-        await army.damage();
-        return;
-      }
-      curInit = curInit - 1;
+    if (this.units === 1) {
+      await this.update({
+        units: this.units - 1,
+      });
     }
   }
 
+  /**
+   * This function takes an army as an argument and damages it.
+   * Every unit in the army is considered as 1% chance of attack success
+   * @param {Army} army - Army - the army that is being attacked
+   */
+  private async attack(army: Army) {
+    const damaged = Math.round(Math.random() * this.units * 0.01);
+    if (damaged) {
+      await army.damage();
+    }
+  }
+
+  /**
+   * Attack the army with the most units in the same battle."
+   */
   public async strongAttack() {
     let armies = await this.reload({
       include: [
@@ -139,6 +143,9 @@ export default class Army
     );
     await this.attack(army);
   }
+  /**
+   * "Attack the army with the least units in the same battle as this army."
+   */
   public async weekAttack() {
     let armies = await this.reload({
       include: [
@@ -163,6 +170,10 @@ export default class Army
     );
     await this.attack(army);
   }
+  /**
+   * "Find all the armies in the same battle as this army, and attack one of them at random."
+   *
+   */
   public async randomAttack() {
     let armies = await this.reload({
       include: [
