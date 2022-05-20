@@ -96,10 +96,14 @@ export default class Army
     });
   }
 
-  private async damage() {
+  public async damage() {
     if (this.units === 1) {
       await this.update({
         units: this.units - 1,
+      });
+    } else {
+      await this.update({
+        units: this.units - 0.5,
       });
     }
   }

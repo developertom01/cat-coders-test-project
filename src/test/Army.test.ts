@@ -24,4 +24,20 @@ describe("Test Army methods", () => {
     });
     expect(army).not.toBeNull();
   });
+  it("Should damage by 0.5", async () => {
+    const battle = await Battle.create({
+      name: "Battle one",
+      uuid: uuidv4(),
+    });
+    const army = await Army.create({
+      battleId: battle.id,
+      name: "Some army",
+      uuid: uuidv4(),
+      units: 89,
+      originalUnits: 89,
+    });
+    await army.damage();
+    await army.reload();
+    expect(army.units).toBe(88);
+  });
 });
