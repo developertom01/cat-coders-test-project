@@ -9,8 +9,8 @@
     "setup": "npx sequelize db:migrate && npx sequelize db:seed",
     "production": "node dist/index",
     "test": "jest --watchAll --no-cache",
-    "reinstall":"docker-compose down && docker-compose up -d database && yarn build && npx sequelize db:migrate",
-    "migrate":"yarn build && sequelize db:migrate"
+    "reinstall": "docker-compose down && docker-compose up -d database && yarn build && npx sequelize db:migrate",
+    "migrate": "yarn build && sequelize db:migrate"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
@@ -34,6 +34,7 @@
     "@socket.io/redis-adapter": "^7.2.0",
     "@types/jest": "^27.5.1",
     "celebrate": "^15.0.1",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.0.1",
     "eslit": "^6.0.0",
     "express": "^4.18.1",
@@ -50,6 +51,9 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testTimeout": 10000,
+    "roots": [
+      "./src"
+    ],
     "setupFilesAfterEnv": [
       "./src/test/setup.ts"
     ]

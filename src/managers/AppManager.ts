@@ -8,16 +8,21 @@ export default class App {
   private static sanitizePathName(file: string) {
     return file.split(".")[0];
   }
-  private static initializeModels() {
+  public static initializeModels() {
     const MODELS_PATH = path.resolve(__dirname, "../", "app", "models");
-    for (const file of fs.readdirSync(MODELS_PATH)) {
-      import(path.resolve(MODELS_PATH, this.sanitizePathName(file))).then(
-        (model) => {
-          model.install();
-          model.configure();
-        }
+    const installers = fs
+      .readdirSync(MODELS_PATH)
+      .map(
+        (file) => import(path.resolve(MODELS_PATH, this.sanitizePathName(file)))
       );
-    }
+    Promise.all(installers).then((installer) => {
+      for (const element of installer) {
+        element.install();
+      }
+      for (const element of installer) {
+        element.configure();
+      }
+    });89
   }
   private static _initialize() {
     if (!process.env.APP_SECRETE) {

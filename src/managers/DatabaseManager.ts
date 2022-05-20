@@ -12,6 +12,7 @@ export default class DatabaseManager {
       password: process.env.DATABASE_PASSWORD,
       username: "root",
       port: Number(process.env.DATABASE_PORT!),
+      logging: false,
     });
   }
   public static connect() {

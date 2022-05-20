@@ -1,6 +1,13 @@
+// import DatabaseManager from "../managers/DatabaseManager";
+import dotenv from "dotenv";
+
+dotenv.config();
+import App from "../managers/AppManager";
 import DatabaseManager from "../managers/DatabaseManager";
 
 beforeEach(async () => {
-  await DatabaseManager.connect();
+  App.initializeModels();
 });
-afterEach(() => {});
+afterEach(() => {
+  DatabaseManager.instance.close();
+});
