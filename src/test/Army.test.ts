@@ -1,14 +1,11 @@
 import Battle from "../app/models/Battle";
 import { v4 as uuidv4 } from "uuid";
 import Army from "../app/models/Army";
-import { HTTPErrors } from "../utils/Errors";
 
 describe("Test Army methods", () => {
-  afterEach(async () => {
-    await Promise.all([
-      Battle.destroy({ where: {} }),
-      Army.destroy({ where: {} }),
-    ]);
+  beforeEach(async () => {
+    await Battle.destroy({ where: {} });
+    await Army.destroy({ where: {} });
   });
   it("Should create an army", async () => {
     const battle = await Battle.create({
@@ -76,5 +73,39 @@ describe("Test Army methods", () => {
     await army.reset();
     await army.reload();
     expect(army.units).toBe(10);
+  });
+  it("Should damage army with lowest unit", async () => {
+    const battle = await Battle.create({
+      name: "Battle one",
+      uuid: uuidv4(),
+    });
+    const [army1, army2, army3] = await Promise.all([
+      Army.create({
+        battleId: battle.id,
+        name: "Some army",
+        uuid: uuidv4(),
+        units: 100,
+        originalUnits: 100,
+      }),
+      Army.create({
+        battleId: battle.id,
+        name: "Some army",
+        uuid: uuidv4(),
+        units: 95,
+        originalUnits: 95,
+      }),
+      await Army.create({
+        battleId: battle.id,
+        name: "Some army",
+        uuid: uuidv4(),
+        units: 88,
+        originalUnits: 88,
+      }),
+    ]);
+    await army1.weekAttack();
+    await Promise.all([army1.reload(), army2.reload(), army3.reload()]);
+    expect(army3.units).toBe(87.5);
+    expect(army2.units).toBe(95);
+    expect(army1.units).toBe(100);
   });
 });

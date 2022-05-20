@@ -138,7 +138,6 @@ export default class Army
               where: {
                 id: {
                   [Op.not]: this.id,
-                  require: false,
                 },
               },
             },
@@ -165,7 +164,6 @@ export default class Army
               where: {
                 id: {
                   [Op.not]: this.id,
-                  require: false,
                 },
               },
             },
@@ -193,7 +191,6 @@ export default class Army
               where: {
                 id: {
                   [Op.not]: this.id,
-                  require: false,
                 },
               },
             },
