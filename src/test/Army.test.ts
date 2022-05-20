@@ -1,6 +1,7 @@
 import Battle from "../app/models/Battle";
 import { v4 as uuidv4 } from "uuid";
 import Army from "../app/models/Army";
+import { AttackStrategy } from "../utils/enums";
 
 describe("Test Army methods", () => {
   beforeEach(async () => {
@@ -19,6 +20,7 @@ describe("Test Army methods", () => {
       uuid: uuidv4(),
       units: 89,
       originalUnits: 89,
+      attackStrategy: AttackStrategy.RANDOM_ATTACK,
     });
     expect(army).not.toBeNull();
   });
@@ -33,6 +35,7 @@ describe("Test Army methods", () => {
       uuid: uuidv4(),
       units: 89,
       originalUnits: 89,
+      attackStrategy: AttackStrategy.RANDOM_ATTACK,
     });
     await army.damage();
     await army.reload();
@@ -49,6 +52,7 @@ describe("Test Army methods", () => {
       uuid: uuidv4(),
       units: 1,
       originalUnits: 1,
+      attackStrategy: AttackStrategy.RANDOM_ATTACK,
     });
     await army.damage();
     await army.reload();
@@ -65,6 +69,7 @@ describe("Test Army methods", () => {
       uuid: uuidv4(),
       units: 10,
       originalUnits: 10,
+      attackStrategy: AttackStrategy.RANDOM_ATTACK,
     });
     await army.damage();
     await army.damage();
@@ -86,6 +91,7 @@ describe("Test Army methods", () => {
         uuid: uuidv4(),
         units: 100,
         originalUnits: 100,
+        attackStrategy: AttackStrategy.RANDOM_ATTACK,
       }),
       Army.create({
         battleId: battle.id,
@@ -93,6 +99,7 @@ describe("Test Army methods", () => {
         uuid: uuidv4(),
         units: 95,
         originalUnits: 95,
+        attackStrategy: AttackStrategy.RANDOM_ATTACK,
       }),
       await Army.create({
         battleId: battle.id,
@@ -100,6 +107,7 @@ describe("Test Army methods", () => {
         uuid: uuidv4(),
         units: 88,
         originalUnits: 88,
+        attackStrategy: AttackStrategy.RANDOM_ATTACK,
       }),
     ]);
     await army1.weekAttack();

@@ -8,7 +8,7 @@ import {
   Optional,
 } from "sequelize";
 import DatabaseManager from "../../managers/DatabaseManager";
-import { HTTPErrors } from "../../utils/Errors";
+import { AttackStrategy } from "../../utils/enums";
 import Battle from "./Battle";
 
 interface NonCreationAttribute {
@@ -23,6 +23,7 @@ interface Attributes extends NonCreationAttribute {
   battleId: string;
   originalUnits: number;
   uuid: string;
+  attackStrategy: AttackStrategy;
 }
 export type AmyCreationAttribute = Optional<
   Attributes,
@@ -66,6 +67,9 @@ export default class Army
       type: DataTypes.FLOAT,
       allowNull: false,
     },
+    attackStrategy: {
+      type: DataTypes.TINYINT,
+    },
     originalUnits: {
       type: DataTypes.FLOAT,
       allowNull: false,
@@ -86,10 +90,15 @@ export default class Army
   public createdAt!: Date;
   public updatedAt!: Date;
   public units!: number;
+  public attackStrategy!: AttackStrategy;
   public originalUnits!: number;
   public uuid!: string;
 
   public readonly battle?: Battle;
+
+  public get isActive() {
+    return this.units > 0;
+  }
 
   public async reset() {
     await this.update({
