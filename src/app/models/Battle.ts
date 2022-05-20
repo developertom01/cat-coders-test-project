@@ -32,7 +32,7 @@ export default class Battle
   implements Attributes
 {
   public static associations: {
-    battle: Association<Battle, Army>;
+    armies: Association<Battle, Army>;
   };
   public static attributes: ModelAttributes<Battle, Attributes> = {
     id: {

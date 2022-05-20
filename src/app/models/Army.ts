@@ -1,4 +1,5 @@
-import moment from "moment";
+import moment, { max } from "moment";
+import { Op } from "sequelize";
 import {
   DataTypes,
   Model,
@@ -82,6 +83,96 @@ export default class Army
   public uuid!: string;
 
   public readonly battle?: Battle;
+
+  private async damage() {
+    await this.update({
+      units: this.units - 1,
+    });
+  }
+
+  private async attack(army: Army) {
+    let curInit = this.units;
+    while (curInit > 0) {
+      const damaged = Math.round(Math.random());
+      if (damaged) {
+        await army.damage();
+        return;
+      }
+      curInit = curInit - 1;
+    }
+  }
+
+  public async strongAttack() {
+    let armies = await this.reload({
+      include: [
+        {
+          association: Army.associations.battle,
+          include: [
+            {
+              association: Battle.associations.armies,
+              where: {
+                id: {
+                  [Op.not]: this.id,
+                  require: false,
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+    const army = armies.battle!.armies!.reduce((prev, cur) =>
+      prev.units > cur.units ? prev : cur
+    );
+    await this.attack(army);
+  }
+  public async weekAttack() {
+    let armies = await this.reload({
+      include: [
+        {
+          association: Army.associations.battle,
+          include: [
+            {
+              association: Battle.associations.armies,
+              where: {
+                id: {
+                  [Op.not]: this.id,
+                  require: false,
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+    const army = armies.battle!.armies!.reduce((prev, cur) =>
+      prev.units < cur.units ? prev : cur
+    );
+    await this.attack(army);
+  }
+  public async randomAttack() {
+    let armies = await this.reload({
+      include: [
+        {
+          association: Army.associations.battle,
+          include: [
+            {
+              association: Battle.associations.armies,
+              where: {
+                id: {
+                  [Op.not]: this.id,
+                  require: false,
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+    const army =
+      armies.battle!.armies![Math.random() * armies.battle!.armies!.length - 1];
+    this.attack(army);
+  }
 }
 export const install = () => {
   Army.init(Army.attributes, {
