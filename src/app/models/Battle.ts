@@ -75,6 +75,16 @@ export default class Battle
 
   public readonly armies?: Army[];
   public readonly attacks?: Attack[];
+
+  public async reset() {
+    await Promise.all([
+      this.reload({ include: [Battle.associations.armies] }),
+      Attack.destroy({ where: { battleId: this.id } }),
+    ]);
+    for (const army of this.armies!) {
+      await army.reset();
+    }
+  }
 }
 
 export const install = () => {

@@ -4,6 +4,7 @@ import BattlesController from "./app/http/Controllers/BattlesController";
 import BattleAddArmyPayload from "./app/http/Payloads/BattleAddArmyPayload";
 import BattleCreatePayload from "./app/http/Payloads/BattleCreatePayload";
 import BattleGetAttacksPayload from "./app/http/Payloads/BattleGetAttacksPayload";
+import ResetGamePayload from "./app/http/Payloads/ResetGamePayload";
 import StartGamePayload from "./app/http/Payloads/StartGamePayload";
 const asyncHandler = (fn: any) => (req: any, res: any, next: any) => {
   return Promise.resolve(fn(req, res, next)).catch(next);
@@ -33,6 +34,11 @@ router.get(
   "/battles/:battleUuid/logs",
   celebrate({ [Segments.PARAMS]: BattleGetAttacksPayload.paramsSchema }),
   asyncHandler(BattlesController.getBattleLogs)
+);
+router.patch(
+  "/battles/:battleUuid/reset",
+  celebrate({ [Segments.PARAMS]: ResetGamePayload.paramsSchema }),
+  asyncHandler(BattlesController.resetBattle)
 );
 
 export default router;

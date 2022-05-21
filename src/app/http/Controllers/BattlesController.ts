@@ -13,6 +13,7 @@ import BattleAddArmyPayload from "../Payloads/BattleAddArmyPayload";
 import ArmyResource from "../Resources/ArmyResource";
 import BattleGetAttacksPayload from "../Payloads/BattleGetAttacksPayload";
 import AttackResource from "../Resources/AttackResource";
+import ResetGamePayload from "../Payloads/ResetGamePayload";
 export default class BattlesController {
   /**
    *
@@ -158,5 +159,20 @@ export default class BattlesController {
       .json(
         battle.attacks!.map((attack) => new AttackResource(attack).toJSON())
       );
+  };
+
+  /* Resetting the battle. */
+  public static resetBattle = async (
+    req: IRequest<never, ResetGamePayload.paramsShape>,
+    res: IResponse
+  ) => {
+    const { battleUuid } = req.params;
+    const battle = await Battle.findOne({ where: { uuid: battleUuid } });
+    if (!battle) {
+      throw new HTTPErrors.NotFoundError("Unknown battle");
+    }
+    await battle.reset();
+    await battle.reload();
+    return res.status(200).json(new BattleResource(battle).toJSON());
   };
 }

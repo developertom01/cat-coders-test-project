@@ -7,7 +7,6 @@ import AttackResource, { IAttackResource } from "./AttackResource";
 export interface IArmyResource {
   units: number;
   name: string;
-  originalUnits: number;
   uuid: string;
   isActive: boolean;
   attackStrategy: AttackStrategy;
@@ -22,7 +21,6 @@ export default class ArmyResource implements Resource<IArmyResource> {
     return {
       name: this.army.name,
       units: this.army.units,
-      originalUnits: this.army.originalUnits,
       uuid: this.army.uuid,
       isActive: this.army.isActive,
       attackStrategy: this.army.attackStrategy,
@@ -32,7 +30,7 @@ export default class ArmyResource implements Resource<IArmyResource> {
             new AttackResource(attack).toJSON()
           )
         : [],
-        attacked: this.army.attacked
+      attacked: this.army.attacked
         ? this.army.attacked.map((attack) =>
             new AttackResource(attack).toJSON()
           )
