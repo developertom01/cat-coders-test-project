@@ -9,6 +9,7 @@ import {
 } from "sequelize";
 import DatabaseManager from "../../managers/DatabaseManager";
 import { AttackStrategy } from "../../utils/enums";
+import Attack from "./Attack";
 import Battle from "./Battle";
 
 interface NonCreationAttribute {
@@ -36,6 +37,8 @@ export default class Army
 {
   public static associations: {
     battle: Association<Army, Battle>;
+    attacked: Association<Army, Attack>;
+    received: Association<Army, Attack>;
   };
   public static attributes: ModelAttributes<Army> = {
     id: {
@@ -95,6 +98,8 @@ export default class Army
   public uuid!: string;
 
   public readonly battle?: Battle;
+  public readonly attacked?: Attack[];
+  public readonly received?: Attack[];
 
   public get isActive() {
     return this.units > 0;
@@ -228,6 +233,18 @@ export const configure = () => {
   Army.belongsTo(Battle, {
     as: "battle",
     foreignKey: "battleId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  Army.hasMany(Attack, {
+    as: "attacked",
+    foreignKey: "attackerId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  Army.hasMany(Attack, {
+    as: "received",
+    foreignKey: "receiverId",
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   });

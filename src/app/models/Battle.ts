@@ -9,6 +9,7 @@ import {
 import DatabaseManager from "../../managers/DatabaseManager";
 import { BattleStatus } from "../../utils/enums";
 import Army from "./Army";
+import Attack from "./Attack";
 interface NonCreationAttribute {
   id: string;
   createdAt: Date;
@@ -32,6 +33,7 @@ export default class Battle
 {
   public static associations: {
     armies: Association<Battle, Army>;
+    attacks: Association<Battle, Attack>;
   };
   public static attributes: ModelAttributes<Battle, Attributes> = {
     id: {
@@ -72,6 +74,7 @@ export default class Battle
   public updatedAt!: Date;
 
   public readonly armies?: Army[];
+  public readonly attacks?: Attack[];
 }
 
 export const install = () => {
@@ -89,6 +92,12 @@ export const install = () => {
 export const configure = () => {
   Battle.hasMany(Army, {
     as: "armies",
+    foreignKey: "battleId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  Battle.hasMany(Attack, {
+    as: "attacks",
     foreignKey: "battleId",
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
