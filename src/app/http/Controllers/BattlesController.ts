@@ -19,7 +19,6 @@ export default class BattlesController {
    */
   public static index = async (req: IRequest, res: IResponse) => {
     const battles = await Battle.findAll({
-      where: { status: BattleStatus.ACTIVE },
       include: [
         Battle.associations.attacks,
         {
@@ -112,6 +111,7 @@ export default class BattlesController {
         },
       ],
     });
+    return res.status(200).json(new BattleResource(battle));
   };
   public static addAnArmy = async (
     req: IRequest<BattleAddArmyPayload.shape, BattleAddArmyPayload.paramsShape>,
