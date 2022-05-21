@@ -9,6 +9,8 @@ import { BattleStatus } from "../../../utils/enums";
 import { HTTPErrors } from "../../../utils/Errors";
 import { NextFunction } from "express";
 import StartGamePayload from "../Payloads/StartGamePayload";
+import BattleAddArmyPayload from "../Payloads/BattleAddArmyPayload";
+import ArmyResource from "../Resources/ArmyResource";
 export default class BattlesController {
   /**
    *
@@ -111,5 +113,27 @@ export default class BattlesController {
       ],
     });
   };
-  public static addAnArmy = async (req: IRequest, res: IResponse) => {};
+  public static addAnArmy = async (
+    req: IRequest<BattleAddArmyPayload.shape, BattleAddArmyPayload.paramsShape>,
+    res: IResponse
+  ) => {
+    const { name, strategy, units } = req.body;
+    const { battleUuid } = req.params;
+    const battle = await Battle.findOne({ where: { uuid: battleUuid } });
+    if (!battle) {
+      throw new HTTPErrors.NotFoundError("Unknown battle");
+    }
+    if (battle.status === BattleStatus.ACTIVE) {
+      throw new HTTPErrors.BadRequestError("Battle already in progress");
+    }
+    const army = await Army.create({
+      battleId: battle.id,
+      uuid: uuidv4(),
+      name,
+      attackStrategy: strategy,
+      units,
+      originalUnits: units,
+    });
+    return res.status(201).json(new ArmyResource(army).toJSON());
+  };
 }
