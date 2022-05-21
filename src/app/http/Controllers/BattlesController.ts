@@ -11,6 +11,8 @@ import { NextFunction } from "express";
 import StartGamePayload from "../Payloads/StartGamePayload";
 import BattleAddArmyPayload from "../Payloads/BattleAddArmyPayload";
 import ArmyResource from "../Resources/ArmyResource";
+import BattleGetAttacksPayload from "../Payloads/BattleGetAttacksPayload";
+import AttackResource from "../Resources/AttackResource";
 export default class BattlesController {
   /**
    *
@@ -113,6 +115,7 @@ export default class BattlesController {
     });
     return res.status(200).json(new BattleResource(battle));
   };
+  /* Adding an army to the battle. */
   public static addAnArmy = async (
     req: IRequest<BattleAddArmyPayload.shape, BattleAddArmyPayload.paramsShape>,
     res: IResponse
@@ -135,5 +138,25 @@ export default class BattlesController {
       originalUnits: units,
     });
     return res.status(201).json(new ArmyResource(army).toJSON());
+  };
+  /* A function that is used to get the battle logs. */
+
+  public static getBattleLogs = async (
+    req: IRequest<never, BattleGetAttacksPayload.paramsShape>,
+    res: IResponse
+  ) => {
+    const { battleUuid } = req.params;
+    const battle = await Battle.findOne({
+      where: { uuid: battleUuid },
+      include: [Battle.associations.attacks],
+    });
+    if (!battle) {
+      throw new HTTPErrors.NotFoundError("Unknown battle");
+    }
+    return res
+      .status(200)
+      .json(
+        battle.attacks!.map((attack) => new AttackResource(attack).toJSON())
+      );
   };
 }
