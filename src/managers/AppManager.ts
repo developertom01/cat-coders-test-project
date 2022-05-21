@@ -6,6 +6,8 @@ import ErrorHandlerMiddleware from "../app/http/Middleware/ErrorHandlerMiddlewar
 import { errors as CelebrateMiddleware } from "celebrate";
 import http from "http";
 import SocketManager from "./SocketManager";
+import cors from "cors";
+import morgan from "morgan";
 
 export default class App {
   private _instance: Express;
@@ -34,8 +36,12 @@ export default class App {
     }
     this._instance = express();
     App.initializeModels();
-
+    if (process.env.NODE_ENV !== "production") {
+      this._instance.use(morgan("dev"));
+    }
+    this._instance.use(cors());
     this._instance.use(express.json());
+
     this._instance.use("/api/v1", Routes);
     //Should be the last middleware
     this._instance.use("*", (req, res) => {

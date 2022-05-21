@@ -15,6 +15,7 @@
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/moment": "^2.13.0",
+    "@types/morgan": "^1.9.3",
     "@types/multer": "^1.4.7",
     "@types/node": "^17.0.34",
     "@types/sequelize": "^4.28.13",
@@ -35,6 +36,7 @@
     "@socket.io/redis-adapter": "^7.2.0",
     "@types/jest": "^27.5.1",
     "celebrate": "^15.0.1",
+    "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "dotenv": "^16.0.1",
     "eslit": "^6.0.0",
@@ -44,6 +46,7 @@
     "import": "^0.0.6",
     "jest": "^28.1.0",
     "moment": "^2.29.3",
+    "morgan": "^1.10.0",
     "multer": "^1.4.4",
     "mysql2": "^2.3.3",
     "redis": "^4.1.0",
