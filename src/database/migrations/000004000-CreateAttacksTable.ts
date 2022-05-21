@@ -3,9 +3,9 @@ import Attack from "../../app/models/Attack";
 
 export = {
   up: (queryInterface: QueryInterface) => {
-    return queryInterface.createTable<Attack>("Armies", Attack.attributes);
+    return queryInterface.createTable<Attack>("Attacks", Attack.attributes);
   },
   down: (queryInterface: QueryInterface) => {
-    return queryInterface.dropTable("Armies");
+    return queryInterface.dropTable("Attacks");
   },
 };

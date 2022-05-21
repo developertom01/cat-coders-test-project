@@ -8,6 +8,7 @@ import BattleResource from "../Resources/Battle";
 import { BattleStatus } from "../../../utils/enums";
 import { HTTPErrors } from "../../../utils/Errors";
 import { NextFunction } from "express";
+import StartGamePayload from "../Payloads/StartGamePayload";
 export default class BattlesController {
   /**
    *
@@ -17,15 +18,21 @@ export default class BattlesController {
   public static index = async (req: IRequest, res: IResponse) => {
     const battles = await Battle.findAll({
       where: { status: BattleStatus.ACTIVE },
-      include: [Battle.associations.armies],
+      include: [
+        Battle.associations.attacks,
+        {
+          association: Battle.associations.armies,
+          include: [Army.associations.attacked, Army.associations.received],
+        },
+      ],
     });
     return res
       .status(200)
       .json(battles.map((battle) => new BattleResource(battle).toJSON()));
   };
   /**
-   * Create new battle
-   * Throws an error when active battle count is 5 or more
+   * Start a battle
+   * Throws an error when active battle has already began
    * @returns BattleResource
    */
   public static store = async (
@@ -64,8 +71,45 @@ export default class BattlesController {
       return battle;
     });
 
-    await battle.reload({ include: [Battle.associations.armies] });
+    await battle.reload({
+      include: [
+        Battle.associations.attacks,
+        {
+          association: Battle.associations.armies,
+          include: [Army.associations.attacked, Army.associations.received],
+        },
+      ],
+    });
 
     return res.status(201).json(new BattleResource(battle).toJSON());
   };
+  /**
+   * Create new battle
+   * Throws an error when active battle count is 5 or more
+   * @returns BattleResource
+   */
+  public static startGame = async (
+    req: IRequest<never, StartGamePayload.paramsShape>,
+    res: IResponse
+  ) => {
+    const { battleUuid } = req.params;
+    const battle = await Battle.findOne({ where: { uuid: battleUuid } });
+    if (!battle) {
+      throw new HTTPErrors.NotFoundError("Unknown battle");
+    }
+    if (battle.status === BattleStatus.ACTIVE) {
+      throw new HTTPErrors.BadRequestError("Battle has already began");
+    }
+    await battle.update({ status: BattleStatus.ACTIVE });
+    await battle.reload({
+      include: [
+        Battle.associations.attacks,
+        {
+          association: Battle.associations.armies,
+          include: [Army.associations.attacked, Army.associations.received],
+        },
+      ],
+    });
+  };
+  public static addAnArmy = async (req: IRequest, res: IResponse) => {};
 }
