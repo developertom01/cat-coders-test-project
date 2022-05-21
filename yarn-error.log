@@ -1,5 +1,5 @@
 Arguments: 
-  /Users/mpeddev/.nvm/versions/node/v14.19.0/bin/node /Users/mpeddev/.nvm/versions/node/v14.19.0/bin/yarn add -D @typesuuid
+  /Users/mpeddev/.nvm/versions/node/v14.19.0/bin/node /Users/mpeddev/.nvm/versions/node/v14.19.0/bin/yarn add -D @types/fishery
 
 PATH: 
   /Users/mpeddev/.nvm/versions/node/v14.19.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/mpeddev/google-cloud-sdk/bin:/Users/mpeddev/.nvm/versions/node/v14.19.0/bin
@@ -14,8 +14,8 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@typesuuid: Request "https://registry.yarnpkg.com/@typesuuid" returned a 405
-      at Request.params.callback [as _callback] (/Users/mpeddev/.nvm/versions/node/v14.19.0/lib/node_modules/yarn/lib/cli.js:67038:18)
+  Error: https://registry.yarnpkg.com/@types%2ffishery: Not found
+      at Request.params.callback [as _callback] (/Users/mpeddev/.nvm/versions/node/v14.19.0/lib/node_modules/yarn/lib/cli.js:67029:18)
       at Request.self.callback (/Users/mpeddev/.nvm/versions/node/v14.19.0/lib/node_modules/yarn/lib/cli.js:140883:22)
       at Request.emit (events.js:400:28)
       at Request.<anonymous> (/Users/mpeddev/.nvm/versions/node/v14.19.0/lib/node_modules/yarn/lib/cli.js:141855:10)
@@ -37,7 +37,9 @@ npm manifest:
       "build": "tsc",
       "setup": "npx sequelize db:migrate && npx sequelize db:seed",
       "production": "node dist/index",
-      "test": "jest --watchAll --no-cache"
+      "test": "jest --watchAll --no-cache",
+      "reinstall": "docker-compose down && docker-compose up -d database redis && yarn build && npx sequelize db:migrate",
+      "migrate": "yarn build && sequelize db:migrate"
     },
     "devDependencies": {
       "@types/express": "^4.17.13",
@@ -46,6 +48,7 @@ npm manifest:
       "@types/node": "^17.0.34",
       "@types/sequelize": "^4.28.13",
       "@types/supertest": "^2.0.12",
+      "@types/uuid": "^8.3.4",
       "@typescript-eslint/eslint-plugin": "^5.25.0",
       "@typescript-eslint/parser": "^5.25.0",
       "eslint": "^8.15.0",
@@ -60,9 +63,13 @@ npm manifest:
       "@socket.io/redis-adapter": "^7.2.0",
       "@types/jest": "^27.5.1",
       "celebrate": "^15.0.1",
+      "cross-env": "^7.0.3",
       "dotenv": "^16.0.1",
       "eslit": "^6.0.0",
       "express": "^4.18.1",
+      "fishery": "^2.2.2",
+      "iconv-lite": "^0.6.3",
+      "import": "^0.0.6",
       "jest": "^28.1.0",
       "moment": "^2.29.3",
       "multer": "^1.4.4",
@@ -76,6 +83,9 @@ npm manifest:
       "preset": "ts-jest",
       "testEnvironment": "node",
       "testTimeout": 10000,
+      "roots": [
+        "./src"
+      ],
       "setupFilesAfterEnv": [
         "./src/test/setup.ts"
       ]
@@ -1095,6 +1105,11 @@ Lockfile:
     dependencies:
       "@types/superagent" "*"
   
+  "@types/uuid@^8.3.4":
+    version "8.3.4"
+    resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-8.3.4.tgz#bd86a43617df0594787d38b735f55c805becf1bc"
+    integrity sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==
+  
   "@types/validator@*", "@types/validator@^13.7.1":
     version "13.7.2"
     resolved "https://registry.yarnpkg.com/@types/validator/-/validator-13.7.2.tgz#a2114225d9be743fb154b06c29b8257aaca42922"
@@ -1707,7 +1722,14 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/create-require/-/create-require-1.1.1.tgz#c1d7e8f1e5f6cfc9ff65f9cd352d37348756c333"
     integrity sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==
   
-  cross-spawn@^7.0.2, cross-spawn@^7.0.3:
+  cross-env@^7.0.3:
+    version "7.0.3"
+    resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-7.0.3.tgz#865264b29677dc015ba8418918965dd232fc54cf"
+    integrity sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==
+    dependencies:
+      cross-spawn "^7.0.1"
+  
+  cross-spawn@^7.0.1, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
     version "7.0.3"
     resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-7.0.3.tgz#f73a85b9d5d41d045551c177e2882d4ac85728a6"
     integrity sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==
@@ -2258,6 +2280,13 @@ Lockfile:
       locate-path "^5.0.0"
       path-exists "^4.0.0"
   
+  fishery@^2.2.2:
+    version "2.2.2"
+    resolved "https://registry.yarnpkg.com/fishery/-/fishery-2.2.2.tgz#94d3d9380295dd3ce555021e9353c5348b8beb77"
+    integrity sha512-jeU0nDhPHJkupmjX+r9niKgVMTBDB8X+U/pktoGHAiWOSyNlMd0HhmqnjrpjUOCDPJYaSSu4Ze16h6dZOKSp2w==
+    dependencies:
+      lodash.mergewith "^4.6.2"
+  
   flat-cache@^3.0.4:
     version "3.0.4"
     resolved "https://registry.yarnpkg.com/flat-cache/-/flat-cache-3.0.4.tgz#61b0338302b2fe9f957dcc32fc2a87f1c3048b11"
@@ -2508,6 +2537,13 @@ Lockfile:
     dependencies:
       pkg-dir "^4.2.0"
       resolve-cwd "^3.0.0"
+  
+  import@^0.0.6:
+    version "0.0.6"
+    resolved "https://registry.yarnpkg.com/import/-/import-0.0.6.tgz#d0eb79df86aa2677c6db61578a5212b3031e6042"
+    integrity sha1-0Ot534aqJnfG22FXilISswMeYEI=
+    dependencies:
+      optimist "0.3.x"
   
   imurmurhash@^0.1.4:
     version "0.1.4"
@@ -3157,6 +3193,11 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
     integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
   
+  lodash.mergewith@^4.6.2:
+    version "4.6.2"
+    resolved "https://registry.yarnpkg.com/lodash.mergewith/-/lodash.mergewith-4.6.2.tgz#617121f89ac55f59047c7aec1ccd6654c6590f55"
+    integrity sha512-GK3g5RPZWTRSeLSpgP8Xhra+pnjBC56q9FZYe1d5RN3TJ35dbkGy3YqBSMbyCrlbi+CM9Z3Jk5yTL7RCsqboyQ==
+  
   lodash@4.17.x, lodash@^4.17.21:
     version "4.17.21"
     resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
@@ -3447,6 +3488,13 @@ Lockfile:
     integrity sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==
     dependencies:
       mimic-fn "^2.1.0"
+  
+  optimist@0.3.x:
+    version "0.3.7"
+    resolved "https://registry.yarnpkg.com/optimist/-/optimist-0.3.7.tgz#c90941ad59e4273328923074d2cf2e7cbc6ec0d9"
+    integrity sha1-yQlBrVnkJzMokjB00s8ufLxuwNk=
+    dependencies:
+      wordwrap "~0.0.2"
   
   optionator@^0.9.1:
     version "0.9.1"
@@ -4415,6 +4463,11 @@ Lockfile:
     version "1.2.3"
     resolved "https://registry.yarnpkg.com/word-wrap/-/word-wrap-1.2.3.tgz#610636f6b1f703891bd34771ccb17fb93b47079c"
     integrity sha512-Hz/mrNwitNRh/HUAtM/VT/5VH+ygD6DV7mYKZAtHOrbs8U7lvPS6xf7EJKMF0uW1KJCl0H701g3ZGus+muE5vQ==
+  
+  wordwrap@~0.0.2:
+    version "0.0.3"
+    resolved "https://registry.yarnpkg.com/wordwrap/-/wordwrap-0.0.3.tgz#a3d5da6cd5c0bc0008d37234bbaf1bed63059107"
+    integrity sha1-o9XabNXAvAAI03I0u68b7WMFkQc=
   
   wrap-ansi@^7.0.0:
     version "7.0.0"
