@@ -1,0 +1,119 @@
+{
+	"info": {
+		"_postman_id": "80c009df-a482-455d-a2ec-3cab24df236a",
+		"name": "New Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "10354174"
+	},
+	"item": [
+		{
+			"name": "create battle",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"Some battle\",\n    \"armies\":[{\n        \"name\":\"Army 1\",\n        \"units\":90,\n        \"strategy\":0\n    },\n    {\n        \"name\":\"Army 1\",\n        \"units\":90,\n        \"strategy\":0\n    }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8081/api/v1/battles"
+			},
+			"response": []
+		},
+		{
+			"name": "fetch battle",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8080/api/v1/battles"
+			},
+			"response": []
+		},
+		{
+			"name": "start battle",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8081/api/v1/battles/dd703d90-6080-4c03-9128-4437d91a1ea5/start-battle"
+			},
+			"response": []
+		},
+		{
+			"name": "Get battle logs",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8081/api/v1/battles/dd703d90-6080-4c03-9128-4437d91a1ea5/logs"
+			},
+			"response": []
+		},
+		{
+			"name": "reset game",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8081/api/v1/battles/dd703d90-6080-4c03-9128-4437d91a1ea5/logs"
+			},
+			"response": []
+		}
+	]
+}
