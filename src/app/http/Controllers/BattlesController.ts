@@ -15,6 +15,7 @@ import BattleGetAttacksPayload from "../Payloads/BattleGetAttacksPayload";
 import AttackResource from "../Resources/AttackResource";
 import ResetGamePayload from "../Payloads/ResetGamePayload";
 import CeleryManager from "../../../managers/CeleryManager";
+import Attack from "../../models/Attack";
 export default class BattlesController {
   /**
    *
@@ -157,7 +158,12 @@ export default class BattlesController {
     const { battleUuid } = req.params;
     const battle = await Battle.findOne({
       where: { uuid: battleUuid },
-      include: [Battle.associations.attacks],
+      include: [
+        {
+          association: Battle.associations.attacks,
+          include: [Attack.associations.receiver, Attack.associations.attacker],
+        },
+      ],
     });
     if (!battle) {
       throw new HTTPErrors.NotFoundError("Unknown battle");

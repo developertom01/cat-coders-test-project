@@ -6,6 +6,7 @@ import AttackResource, { IAttackResource } from "./AttackResource";
 
 export interface IArmyResource {
   units: number;
+  originalUnits: number;
   name: string;
   uuid: string;
   isActive: boolean;
@@ -21,6 +22,7 @@ export default class ArmyResource implements Resource<IArmyResource> {
     return {
       name: this.army.name,
       units: this.army.units,
+      originalUnits: this.army.originalUnits,
       uuid: this.army.uuid,
       isActive: this.army.isActive,
       attackStrategy: this.army.attackStrategy,

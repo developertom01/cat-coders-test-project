@@ -1,13 +1,14 @@
 import Resource from ".";
 import { AttackStrategy } from "../../../utils/enums";
 import Attack from "../../models/Attack";
+import ArmyResource, { IArmyResource } from "./ArmyResource";
 
 export interface IAttackResource {
   strategy: AttackStrategy;
   isSuccessfully: boolean;
   createdAt: string;
-  receiverId: string;
-  attackerId: string;
+  receiver: IArmyResource | null;
+  attacker: IArmyResource | null;
 }
 
 export default class AttackResource implements Resource<IAttackResource> {
@@ -17,8 +18,12 @@ export default class AttackResource implements Resource<IAttackResource> {
       strategy: this.attack.strategy,
       isSuccessfully: this.attack.isSuccessfully,
       createdAt: this.attack.createdAt.toISOString(),
-      receiverId: this.attack.receiverId,
-      attackerId: this.attack.attackerId,
+      receiver: this.attack.receiver
+        ? new ArmyResource(this.attack.receiver).toJSON()
+        : null,
+      attacker: this.attack.attacker
+        ? new ArmyResource(this.attack.attacker).toJSON()
+        : null,
     };
   }
 }
