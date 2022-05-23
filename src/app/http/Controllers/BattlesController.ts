@@ -7,7 +7,6 @@ import Army from "../../models/Army";
 import BattleResource from "../Resources/Battle";
 import { BattleStatus } from "../../../utils/enums";
 import { HTTPErrors } from "../../../utils/Errors";
-import { NextFunction } from "express";
 import StartGamePayload from "../Payloads/StartGamePayload";
 import BattleAddArmyPayload from "../Payloads/BattleAddArmyPayload";
 import ArmyResource from "../Resources/ArmyResource";
@@ -42,8 +41,7 @@ export default class BattlesController {
    */
   public static store = async (
     req: IRequest<BattleCreatePayload.shape>,
-    res: IResponse,
-    next: NextFunction
+    res: IResponse
   ) => {
     const { armies, name } = req.body;
 
@@ -104,14 +102,14 @@ export default class BattlesController {
     if (battle.armies!.length < 3) {
       throw new HTTPErrors.BadRequestError("Not enough army");
     }
-    // const battleCount = await Battle.count({
-    //   where: { status: BattleStatus.ACTIVE },
-    // });
-    // if (battleCount >= 5) {
-    //   throw new HTTPErrors.BadRequestError(
-    //     "Maximum active battle count exceeded"
-    //   );
-    // }
+    const battleCount = await Battle.count({
+      where: { status: BattleStatus.ACTIVE },
+    });
+    if (battleCount >= 5) {
+      throw new HTTPErrors.BadRequestError(
+        "Maximum active battle count exceeded"
+      );
+    }
     await battle.update({ status: BattleStatus.ACTIVE });
     CeleryManager.client.createTask("task.battle").applyAsync([battle.id]);
     await battle.reload({
@@ -158,9 +156,12 @@ export default class BattlesController {
     const { battleUuid } = req.params;
     const battle = await Battle.findOne({
       where: { uuid: battleUuid },
+
       include: [
         {
           association: Battle.associations.attacks,
+          limit: 40,
+          order: [["createdAt", "DESC"]],
           include: [Attack.associations.receiver, Attack.associations.attacker],
         },
       ],
