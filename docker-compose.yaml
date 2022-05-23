@@ -18,11 +18,12 @@ services:
     ports:
       - ${PORT}:8080
     depends_on:
-      - redis
       - database
+      - redis
     command: sh -c 'yarn build && yarn setup && yarn start'
     volumes:
       - .:/opt/app
+    restart: on-failure
     
   
   
@@ -30,6 +31,11 @@ services:
     image: redis:7-alpine
     ports:
       - ${REDIS_PORT}:6379
+    healthcheck:
+      test: ["CMD", "curl","-f","http:localhost:6379"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
 
   database:
     image: mariadb:10.7.1
@@ -40,3 +46,8 @@ services:
       MARIADB_DATABASE: ${DATABASE_NAME}
       MARIADB_USER: ${DATABASE_USER}
       MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes!
+    healthcheck:
+      test: ["CMD","curl","-f","http:localhost:3306"]
+      interval: 30s
+      timeout: 30s
+      retries: 5

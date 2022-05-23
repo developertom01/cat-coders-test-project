@@ -9,7 +9,7 @@
     "setup": "npx sequelize db:migrate && npx sequelize db:seed",
     "production": "node dist/index",
     "test": "jest --watchAll --no-cache",
-    "reinstall": "docker-compose down && docker-compose up -d database redis && yarn build && npx sequelize db:migrate",
+    "reinstall": "docker-compose down && docker-compose up -d database redis  && yarn build && npx sequelize db:migrate",
     "migrate": "sequelize db:migrate",
     "seed": "sequelize db:seed:all",
     "setup:db":"rm -rf ./dist && yarn build && yarn migrate && yarn seed"
