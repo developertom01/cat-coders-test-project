@@ -6,7 +6,7 @@
   "scripts": {
     "start": "ts-node-dev ./src/index",
     "build": "tsc",
-    "setup": "npx sequelize db:migrate && npx sequelize db:seed",
+    "setup": "npx sequelize db:migrate && npx sequelize",
     "production": "node dist/index",
     "test": "jest --watchAll --no-cache",
     "migrate": "sequelize db:migrate",

@@ -20,7 +20,7 @@ services:
     depends_on:
       - database
       - redis
-    command: sh -c 'yarn build && yarn setup && yarn start'
+    command: sh -c 'yarn build && yarn setup:db && yarn start'
     volumes:
       - .:/opt/app
     restart: on-failure
