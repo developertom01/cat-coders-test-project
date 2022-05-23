@@ -8,6 +8,7 @@ import http from "http";
 import SocketManager from "./SocketManager";
 import cors from "cors";
 import morgan from "morgan";
+import nodeSchedule from "node-schedule";
 
 export default class App {
   private _instance: Express;
@@ -36,10 +37,10 @@ export default class App {
     }
     this._instance = express();
     App.initializeModels();
+    this._instance.use(cors());
     if (process.env.NODE_ENV !== "production") {
       this._instance.use(morgan("dev"));
     }
-    this._instance.use(cors());
     this._instance.use(express.json());
 
     this._instance.use("/api/v1", Routes);
@@ -49,6 +50,7 @@ export default class App {
     });
     this._instance.use(CelebrateMiddleware());
     this._instance.use(ErrorHandlerMiddleware);
+    nodeSchedule.scheduleJob("",()=>{});
   }
   public instance() {
     return this._instance;

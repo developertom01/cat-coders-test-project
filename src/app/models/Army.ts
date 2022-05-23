@@ -114,6 +114,7 @@ export default class Army
   public async damage() {
     if (this.units <= 0) {
       //Todo: Render inactive
+      return;
     }
     if (this.units === 1) {
       await this.update({
@@ -132,34 +133,56 @@ export default class Army
    * @param {Army} army - Army - the army that is being attacked
    */
   private async attack(army: Army) {
-    const damaged = Math.round(Math.random() * this.units * 0.01);
+    console.log("Hello--------------------------");
+
+    const damaged = !!Math.round(Math.random() * this.units * 0.01);
     if (damaged) {
       await army.damage();
+    }
+    await Attack.create({
+      attackerId: this.id,
+      battleId: this.battleId,
+      isSuccessfully: damaged,
+      receiverId: army.id,
+      strategy: this.attackStrategy,
+    });
+  }
+
+  public async fight() {
+    if (this.attackStrategy === AttackStrategy.RANDOM_ATTACK) {
+      await this.randomAttack();
+    } else if (this.attackStrategy === AttackStrategy.STRONG_ATTACK) {
+      await this.strongAttack();
+    } else {
+      this.weekAttack();
     }
   }
 
   /**
    * Attack the army with the most units in the same battle."
    */
-  public async strongAttack() {
-    let armies = await this.reload({
+  private async strongAttack() {
+    await this.reload({
       include: [
         {
           association: Army.associations.battle,
           include: [
             {
               association: Battle.associations.armies,
-              where: {
-                id: {
-                  [Op.not]: this.id,
-                },
-              },
+              // where: {
+              //   id: {
+              //     [Op.not]: this.id,
+              //     units: {
+              //       [Op.gt]: 0,
+              //     },
+              //   },
+              // },
             },
           ],
         },
       ],
     });
-    const army = armies.battle!.armies!.reduce((prev, cur) =>
+    const army = this.battle!.armies!.reduce((prev, cur) =>
       prev.units > cur.units ? prev : cur
     );
     await this.attack(army);
@@ -167,8 +190,8 @@ export default class Army
   /**
    * "Attack the army with the least units in the same battle as this army."
    */
-  public async weekAttack() {
-    let armies = await this.reload({
+  private async weekAttack() {
+    await this.reload({
       include: [
         {
           association: Army.associations.battle,
@@ -176,16 +199,20 @@ export default class Army
             {
               association: Battle.associations.armies,
               where: {
-                id: {
-                  [Op.not]: this.id,
-                },
+                // id: {
+                //   [Op.not]: this.id,
+                //   units: {
+                //     [Op.gt]: 0,
+                //   },
+                //   require: false,
+                // },
               },
             },
           ],
         },
       ],
     });
-    const army = armies.battle!.armies!.reduce((prev, cur) =>
+    const army = this.battle!.armies!.reduce((prev, cur) =>
       prev.units < cur.units ? prev : cur
     );
     await this.attack(army);
@@ -194,27 +221,33 @@ export default class Army
    * "Find all the armies in the same battle as this army, and attack one of them at random."
    *
    */
-  public async randomAttack() {
-    let armies = await this.reload({
+  private async randomAttack() {
+    await this.reload({
       include: [
         {
           association: Army.associations.battle,
           include: [
             {
               association: Battle.associations.armies,
-              where: {
-                id: {
-                  [Op.not]: this.id,
-                },
-              },
+              // where: {
+              //   id: {
+              //     [Op.not]: this.id,
+              //     units: {
+              //       [Op.gt]: 0,
+              //     },
+              //   },
+              // },
             },
           ],
         },
       ],
     });
+
     const army =
-      armies.battle!.armies![Math.random() * armies.battle!.armies!.length - 1];
-    this.attack(army);
+      this.battle!.armies![Math.random() * this.battle!.armies!.length - 1];
+    if (army) {
+      this.attack(army);
+    }
   }
 }
 export const install = () => {

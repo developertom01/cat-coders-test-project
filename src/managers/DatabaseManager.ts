@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 export default class DatabaseManager {
+  private constructor() {}
   private static _instance: Sequelize;
   private static _initialize() {
     this._instance = new Sequelize({

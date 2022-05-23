@@ -26,7 +26,6 @@ export default class BattlesController {
         Battle.associations.attacks,
         {
           association: Battle.associations.armies,
-          include: [Army.associations.attacked, Army.associations.received],
         },
       ],
     });
@@ -45,14 +44,7 @@ export default class BattlesController {
     next: NextFunction
   ) => {
     const { armies, name } = req.body;
-    const battleCount = await Battle.count({
-      where: { status: BattleStatus.ACTIVE },
-    });
-    if (battleCount >= 5) {
-      throw new HTTPErrors.BadRequestError(
-        "Maximum active battle count exceeded"
-      );
-    }
+
     const battle = await DatabaseManager.instance.transaction(async (t) => {
       const battle = await Battle.create(
         {
@@ -97,14 +89,29 @@ export default class BattlesController {
     res: IResponse
   ) => {
     const { battleUuid } = req.params;
-    const battle = await Battle.findOne({ where: { uuid: battleUuid } });
+    const battle = await Battle.findOne({
+      where: { uuid: battleUuid },
+      include: [Battle.associations.armies],
+    });
     if (!battle) {
       throw new HTTPErrors.NotFoundError("Unknown battle");
     }
     if (battle.status === BattleStatus.ACTIVE) {
-      throw new HTTPErrors.BadRequestError("Battle has already began");
+      throw new HTTPErrors.BadRequestError("Battle has already began.");
     }
+    if (battle.armies!.length < 3) {
+      throw new HTTPErrors.BadRequestError("Not enough army");
+    }
+    // const battleCount = await Battle.count({
+    //   where: { status: BattleStatus.ACTIVE },
+    // });
+    // if (battleCount >= 5) {
+    //   throw new HTTPErrors.BadRequestError(
+    //     "Maximum active battle count exceeded"
+    //   );
+    // }
     await battle.update({ status: BattleStatus.ACTIVE });
+    battle.begin();
     await battle.reload({
       include: [
         Battle.associations.attacks,

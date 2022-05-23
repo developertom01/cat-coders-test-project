@@ -76,14 +76,62 @@ export default class Battle
   public readonly armies?: Army[];
   public readonly attacks?: Attack[];
 
+  public get isDone() {
+    return this.armies!.filter((army) => army.isActive).length <= 1;
+  }
+
+  public async begin() {
+    console.log("Has began");
+    await this.reload({ include: [Battle.associations.armies] });
+    let isOngoing = true;
+    while (isOngoing) {
+      console.log("Has began BATTLE1 ---------");
+      const promises: Promise<void>[] = [];
+      for (const army of this.armies!) {
+        if (army.isActive) {
+          promises.push(army.fight());
+        }
+      }
+      await Promise.all(promises);
+      await this.reload({ include: [Battle.associations.armies] });
+      if (this.isDone) {
+        isOngoing = false;
+        await this.update({
+          status: BattleStatus.INACTIVE,
+        });
+      } else {
+        await new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(null);
+          }, 100);
+        });
+      }
+    }
+  }
+
+  // public async reset() {
+  //   await Promise.all([
+  //     this.reload({ include: [Battle.associations.armies] }),
+  //     Attack.destroy({ where: { battleId: this.id } }),
+  //   ]);
+  //   const promises: Promise<void>[] = [];
+  //   for (const army of this.armies!) {
+  //     promises.push(army.reset());
+  //   }
+  //   const newPromise = this.update({ status: BattleStatus.INACTIVE });
+  //   await Promise.all([...promises, newPromise]);
+  // }
   public async reset() {
     await Promise.all([
       this.reload({ include: [Battle.associations.armies] }),
       Attack.destroy({ where: { battleId: this.id } }),
     ]);
+    const promises: Promise<void>[] = [];
     for (const army of this.armies!) {
-      await army.reset();
+      promises.push(army.reset());
     }
+    const newPromise = this.update({ status: BattleStatus.INACTIVE });
+    await Promise.all([...promises, newPromise]);
   }
 }
 

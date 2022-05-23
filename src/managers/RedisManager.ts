@@ -1,6 +1,7 @@
 import { createClient, RedisClientType } from "redis";
 
 export default class RedisManager {
+  private constructor() {}
   private static _instance: RedisClientType;
 
   private static _initialize() {
