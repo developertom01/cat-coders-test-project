@@ -6,6 +6,8 @@ export interface IAttackResource {
   strategy: AttackStrategy;
   isSuccessfully: boolean;
   createdAt: string;
+  receiverId: string;
+  attackerId: string;
 }
 
 export default class AttackResource implements Resource<IAttackResource> {
@@ -15,6 +17,8 @@ export default class AttackResource implements Resource<IAttackResource> {
       strategy: this.attack.strategy,
       isSuccessfully: this.attack.isSuccessfully,
       createdAt: this.attack.createdAt.toISOString(),
+      receiverId: this.attack.receiverId,
+      attackerId: this.attack.attackerId,
     };
   }
 }
