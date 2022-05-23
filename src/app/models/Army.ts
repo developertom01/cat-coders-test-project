@@ -133,17 +133,19 @@ export default class Army
    * @param {Army} army - Army - the army that is being attacked
    */
   private async attack(army: Army) {
-    const damaged = !!Math.round(Math.random() * this.units * 0.01);
-    if (damaged) {
-      await army.damage();
+    if (parseInt(army.id) !== parseInt(this.id) && army.units > 0) {
+      const damaged = !!Math.round(Math.random() * this.units * 0.01);
+      if (damaged) {
+        await army.damage();
+      }
+      await Attack.create({
+        attackerId: this.id,
+        battleId: this.battleId,
+        isSuccessfully: damaged,
+        receiverId: army.id,
+        strategy: this.attackStrategy,
+      });
     }
-    await Attack.create({
-      attackerId: this.id,
-      battleId: this.battleId,
-      isSuccessfully: damaged,
-      receiverId: army.id,
-      strategy: this.attackStrategy,
-    });
   }
 
   public async fight() {
