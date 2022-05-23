@@ -1,6 +1,7 @@
 import { createWorker, createClient } from "celery-node";
 import Client from "celery-node/dist/app/client";
 import Worker from "celery-node/dist/app/worker";
+import Battle from "../app/models/Battle";
 
 export default class CeleryManager {
   private constructor() {}
@@ -23,6 +24,11 @@ export default class CeleryManager {
       this.redisConnectionUrl,
       this.redisConnectionUrl
     );
+    this._worker.register("task.battle", async (battleId: string) => {
+      const battle = await Battle.findByPk(battleId);
+      //Do something
+      await battle!.begin();
+    });
   }
 
   public static get worker() {

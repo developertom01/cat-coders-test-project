@@ -14,6 +14,7 @@ import ArmyResource from "../Resources/ArmyResource";
 import BattleGetAttacksPayload from "../Payloads/BattleGetAttacksPayload";
 import AttackResource from "../Resources/AttackResource";
 import ResetGamePayload from "../Payloads/ResetGamePayload";
+import CeleryManager from "../../../managers/CeleryManager";
 export default class BattlesController {
   /**
    *
@@ -111,7 +112,7 @@ export default class BattlesController {
     //   );
     // }
     await battle.update({ status: BattleStatus.ACTIVE });
-    battle.begin();
+    CeleryManager.client.createTask("task.battle").applyAsync([battle.id]);
     await battle.reload({
       include: [
         Battle.associations.attacks,
