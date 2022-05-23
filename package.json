@@ -10,9 +10,12 @@
     "production": "node dist/index",
     "test": "jest --watchAll --no-cache",
     "reinstall": "docker-compose down && docker-compose up -d database redis && yarn build && npx sequelize db:migrate",
-    "migrate": "yarn build && sequelize db:migrate"
+    "migrate": "sequelize db:migrate",
+    "seed": "sequelize db:seed:all",
+    "setup:db":"rm -rf ./dist && yarn build && yarn migrate && yarn seed"
   },
   "devDependencies": {
+    "@faker-js/faker": "^6.3.1",
     "@types/express": "^4.17.13",
     "@types/moment": "^2.13.0",
     "@types/morgan": "^1.9.3",

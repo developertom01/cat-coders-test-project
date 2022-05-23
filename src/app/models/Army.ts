@@ -133,8 +133,6 @@ export default class Army
    * @param {Army} army - Army - the army that is being attacked
    */
   private async attack(army: Army) {
-    console.log("Hello--------------------------");
-
     const damaged = !!Math.round(Math.random() * this.units * 0.01);
     if (damaged) {
       await army.damage();
@@ -161,7 +159,7 @@ export default class Army
   /**
    * Attack the army with the most units in the same battle."
    */
-  private async strongAttack() {
+  public async strongAttack() {
     await this.reload({
       include: [
         {
@@ -190,7 +188,7 @@ export default class Army
   /**
    * "Attack the army with the least units in the same battle as this army."
    */
-  private async weekAttack() {
+  public async weekAttack() {
     await this.reload({
       include: [
         {
@@ -221,7 +219,7 @@ export default class Army
    * "Find all the armies in the same battle as this army, and attack one of them at random."
    *
    */
-  private async randomAttack() {
+  public async randomAttack() {
     await this.reload({
       include: [
         {
